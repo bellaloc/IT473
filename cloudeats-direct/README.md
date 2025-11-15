@@ -1,164 +1,184 @@
-CloudEats Direct – Cloud-Based Logistics & E-Commerce Platform
-Project Overview
+CloudEats Direct
 
-CloudEats Direct is a cloud-native logistics and e-commerce platform designed to provide:
+CloudEats Direct is a microservices-based food delivery platform. This project contains multiple services (fleet, inventory, notification, order, and payment), infrastructure code using Terraform, and CI/CD pipelines for automated testing and deployment.
 
-Customer-facing order placement, tracking, and notifications
-
-Real-time fleet telemetry and routing
-
-Integration with ERP, WMS, and TMS systems
-
-High availability, multi-region deployment on AWS
-
-Event-driven microservices architecture for scalability and resilience
-
-The system uses AWS-managed services including ECS, Lambda, Aurora Global DB, Neptune, S3, CloudFront, EventBridge, and IoT Core.
-
-Architecture
-
-The architecture is organized into five primary planes:
-
-Edge & Delivery Plane – Global routing, security, CDN, and caching.
-
-Application Plane – Stateless microservices for Orders, Inventory, Fleet, Payment, Notification.
-
-Data Plane – Transactional (Aurora), Graph (Neptune), Cache (ElastiCache), Analytics (S3/Glue/Redshift/QuickSight).
-
-Integration Plane – Event-driven messaging with EventBridge, SQS, SNS, Step Functions, and IoT telemetry.
-
-Security & Operations Plane – IAM, KMS, Secrets Manager, CloudWatch, X-Ray, Config, GuardDuty, and CI/CD automation.
-
-Multi-Region Design:
-
-Active–Active deployment in US-East-1 and US-West-2
-
-Aurora Global DB and Neptune Global DB for cross-region replication
-
-S3 Cross-Region Replication (CRR)
-
-Route 53 health checks and AWS Global Accelerator for failover
+Table of Contents
 
 Project Structure
-cloudeats-direct/
-│
-├─ services/
-│   ├─ order-service/
-│   │   └─ src/
-│   │       ├─ index.js
-│   │       ├─ routes.js
-│   │       └─ db.js
-│   ├─ inventory-service/
-│   ├─ fleet-service/
-│   ├─ payment-service/
-│   └─ notification-service/
-│
-├─ infrastructure/
-│   ├─ network/
-│   │   ├─ main.tf
-│   │   ├─ variables.tf
-│   │   └─ outputs.tf
-│   ├─ compute/
-│   ├─ database/
-│   └─ storage/
-│
-├─ ci-cd/
-│   ├─ github-actions/
-│   │   └─ build-and-deploy.yml
-│   └─ scripts/
-│       ├─ build.sh
-│       ├─ deploy.sh
-│       └─ test.sh
-│
-└─ docs/
-    ├─ architecture-diagram.png
-    ├─ api-spec.yaml
-    └─ team-roles.md
 
-Setup & Installation
-Prerequisites
+Requirements
 
-Node.js v18+
+Installation
+( for service in services/*; do
+  cd $service
+  npm install
+  cd ../..
+done
+_ )
 
-AWS CLI configured
+IT473 folder: for service in services/*/; do (cd "$service" && npm install); done
 
-Terraform v1.5+
+npm install -g concurrently
 
-Git
+concurrently "npm start --prefix services/fleet-service" \
+            "npm start --prefix services/inventory-service" \
+            "npm start --prefix services/notification-service" \
+            "npm start --prefix services/order-service" \
+            "npm start --prefix services/payment-service"
 
-Clone Repository
-git clone https://github.com/bellaloc/cloudeats-direct.git
-cd cloudeats-direct
+            or:
+
+chmod +x start-all.sh
+
+./start-all.sh
+
+
+Running the Project
+
+Services
 
 Infrastructure
-cd infrastructure/network
-terraform init
-terraform plan
-terraform apply
-
-
-Repeat for other infrastructure modules (compute, database, storage).
-
-Microservices
-cd services/order-service
-npm install
-npm start
-
-
-Repeat for inventory-service, fleet-service, payment-service, notification-service, changing the port as needed.
 
 CI/CD
 
-Configure GitHub Actions using ci-cd/github-actions/build-and-deploy.yml
+Documentation
 
-Use provided scripts in ci-cd/scripts/ to build, test, and deploy
+Project Structure
+cloudeats-direct/
+├─ services/
+│  ├─ fleet-service/
+│  ├─ inventory-service/
+│  ├─ notification-service/
+│  ├─ order-service/
+│  └─ payment-service/
+├─ infrastructure/
+│  ├─ compute/
+│  ├─ database/
+│  ├─ network/
+│  ├─ storage/
+│  ├─ security/
+│  └─ monitoring/
+├─ ci-cd/
+│  ├─ github-actions/
+│  └─ scripts/
+├─ docs/
+├─ docker-compose.yml
+└─ README.md
 
-Usage
+Requirements
 
-Access API via http://localhost:3001/orders (for Order Service)
+Node.js
+ v18+
 
-Use Postman or similar tool to test endpoints
+Docker
+ and Docker Compose v2+
 
-Real-time fleet telemetry simulated via fleet-service MQTT or API
+Terraform
+ (for infrastructure)
 
-Performance & Optimization
+Installation
 
-ECS Auto-scaling based on CPU/memory
+Clone the repository:
 
-Aurora Serverless v2 for transactional DB scaling
+git clone <repo-url>
+cd cloudeats-direct
 
-Redis caching for hot queries (products, delivery slots)
 
-CloudFront CDN for SPA assets and API caching
+Install dependencies for all services:
 
-Event-driven decoupling via EventBridge + SQS
+cd services/fleet-service && npm install
+cd ../inventory-service && npm install
+cd ../notification-service && npm install
+cd ../order-service && npm install
+cd ../payment-service && npm install
 
-Security & Compliance
 
-IAM least-privilege roles
+Tip: You can automate this with a shell script for all services.
 
-KMS encryption for all data at rest
+Running the Project
+Using Docker Compose
 
-TLS 1.3 for all in-transit traffic
+From the project root:
 
-CloudTrail + Config + GuardDuty + Security Hub for auditing and monitoring
+docker compose up --build
 
-Cognito for authentication, MFA, and federated logins
 
-Contributors
+This will start all microservices locally and connect them via Docker networking.
 
-Christa Lococo – Technical Lead / Infrastructure & Microservices
+Access Services
 
-Kevin L. Jones – Diagram & Architecture Design
+Fleet Service: http://localhost:3001
 
-Tom Duprey – Enhancements & Event-Driven Architecture
+Inventory Service: http://localhost:3002
 
-Next Steps
+Notification Service: http://localhost:3003
 
-Implement API endpoints with real database queries
+Order Service: http://localhost:3004
 
-Integrate ERP/WMS/TMS systems
+Payment Service: http://localhost:3005
 
-Add automated tests for all services
+Ports are defined in each service’s Dockerfile or docker-compose.yml.
 
-Deploy to AWS using CI/CD pipeline
+Services
+
+Each service has:
+
+src/index.js → entry point
+
+package.json → dependencies
+
+Dockerfile → Docker build instructions
+
+README.md → service-specific documentation
+
+Infrastructure
+
+Infrastructure is managed via Terraform under infrastructure/:
+
+Compute: ECS, Lambda, API Gateway
+
+Database: Aurora, Neptune, Redis
+
+Network: VPC, Subnets, Route53
+
+Storage: S3
+
+Security: IAM, KMS, WAF, Secrets Manager
+
+Monitoring: CloudWatch, X-Ray, Logs
+
+Initialize and apply Terraform:
+
+cd infrastructure
+terraform init
+terraform apply
+
+CI/CD
+
+CI/CD is set up using GitHub Actions (ci-cd/github-actions/build-and-deploy.yml) with scripts under ci-cd/scripts/:
+
+build.sh → builds Docker images
+
+test.sh → runs automated tests
+
+deploy.sh → deploys to staging/production
+
+Trigger workflow on push or pull requests to main branch.
+
+Documentation
+
+Documentation is located in docs/:
+
+api-spec.yaml → OpenAPI spec
+
+architecture-diagram.png → system architecture
+
+team-roles.md → roles and responsibilities
+
+Notes
+
+Ensure Docker is running before executing Docker Compose commands.
+
+Each service can also be run locally using npm start after installing dependencies.
+
+Use docker compose down to stop the environment.
