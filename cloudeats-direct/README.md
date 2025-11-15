@@ -1,6 +1,6 @@
 CloudEats Direct
 
-CloudEats Direct is a microservices-based food delivery platform. This project contains multiple services (fleet, inventory, notification, order, and payment), infrastructure code using Terraform, and CI/CD pipelines for automated testing and deployment.
+CloudEats Direct is a microservices-based food delivery platform built with modern technologies. This project contains multiple services (fleet, inventory, notification, order, and payment), infrastructure code using Terraform, and CI/CD pipelines for automated testing and deployment.
 
 Table of Contents
 
@@ -9,29 +9,6 @@ Project Structure
 Requirements
 
 Installation
-( for service in services/*; do
-  cd $service
-  npm install
-  cd ../..
-done
-_ )
-
-IT473 folder: for service in services/*/; do (cd "$service" && npm install); done
-
-npm install -g concurrently
-
-concurrently "npm start --prefix services/fleet-service" \
-            "npm start --prefix services/inventory-service" \
-            "npm start --prefix services/notification-service" \
-            "npm start --prefix services/order-service" \
-            "npm start --prefix services/payment-service"
-
-            or:
-
-chmod +x start-all.sh
-
-./start-all.sh
-
 
 Running the Project
 
@@ -42,6 +19,8 @@ Infrastructure
 CI/CD
 
 Documentation
+
+Notes
 
 Project Structure
 cloudeats-direct/
@@ -67,24 +46,24 @@ cloudeats-direct/
 
 Requirements
 
-Node.js
- v18+
+Node.js v18+
 
-Docker
- and Docker Compose v2+
+Docker and Docker Compose v2+
 
-Terraform
- (for infrastructure)
+Terraform (for infrastructure setup)
 
 Installation
-
-Clone the repository:
-
+1. Clone the Repository
 git clone <repo-url>
 cd cloudeats-direct
 
+2. Install Dependencies for All Services
 
-Install dependencies for all services:
+You can either install dependencies for each service manually or automate it with a script.
+
+Manual Installation:
+
+For each service, run:
 
 cd services/fleet-service && npm install
 cd ../inventory-service && npm install
@@ -92,20 +71,52 @@ cd ../notification-service && npm install
 cd ../order-service && npm install
 cd ../payment-service && npm install
 
+Automate with a Script:
 
-Tip: You can automate this with a shell script for all services.
+Run the following command to install dependencies for all services in one go:
+
+for service in services/*; do
+  cd $service
+  npm install
+  cd ../..
+done
+
+
+Alternatively, you can use a start-all.sh script (see Running the Project section for more details).
+
+3. Install Concurrently
+
+To run services concurrently (optional but recommended):
+
+npm install -g concurrently
 
 Running the Project
-Using Docker Compose
+Option 1: Using Docker Compose
 
-From the project root:
+To start all services using Docker Compose, run the following command from the project root:
 
 docker compose up --build
 
 
-This will start all microservices locally and connect them via Docker networking.
+This will build and start all microservices locally and connect them via Docker networking.
+
+Option 2: Manually Using start-all.sh
+
+Make the script executable:
+
+chmod +x start-all.sh
+
+
+Run the script:
+
+./start-all.sh
+
+
+This will start all services concurrently.
 
 Access Services
+
+Once the services are up and running, you can access them via the following URLs:
 
 Fleet Service: http://localhost:3001
 
@@ -117,23 +128,23 @@ Order Service: http://localhost:3004
 
 Payment Service: http://localhost:3005
 
-Ports are defined in each service’s Dockerfile or docker-compose.yml.
+Ports are defined in each service's Dockerfile or docker-compose.yml.
 
 Services
 
-Each service has:
+Each service includes the following:
 
-src/index.js → entry point
+src/index.js → Entry point
 
-package.json → dependencies
+package.json → Service dependencies
 
 Dockerfile → Docker build instructions
 
-README.md → service-specific documentation
+README.md → Service-specific documentation
 
 Infrastructure
 
-Infrastructure is managed via Terraform under infrastructure/:
+Infrastructure is managed via Terraform under the infrastructure/ directory:
 
 Compute: ECS, Lambda, API Gateway
 
@@ -147,33 +158,37 @@ Security: IAM, KMS, WAF, Secrets Manager
 
 Monitoring: CloudWatch, X-Ray, Logs
 
-Initialize and apply Terraform:
-
+1. Initialize Terraform:
 cd infrastructure
 terraform init
+
+2. Apply Terraform:
 terraform apply
+
+
+This will deploy the infrastructure.
 
 CI/CD
 
-CI/CD is set up using GitHub Actions (ci-cd/github-actions/build-and-deploy.yml) with scripts under ci-cd/scripts/:
+CI/CD pipelines are set up using GitHub Actions. The workflow is defined in ci-cd/github-actions/build-and-deploy.yml and includes the following scripts located under ci-cd/scripts/:
 
-build.sh → builds Docker images
+build.sh → Builds Docker images for the services
 
-test.sh → runs automated tests
+test.sh → Runs automated tests
 
-deploy.sh → deploys to staging/production
+deploy.sh → Deploys to staging/production
 
-Trigger workflow on push or pull requests to main branch.
+The GitHub Actions workflow triggers on pushes or pull requests to the main branch.
 
 Documentation
 
-Documentation is located in docs/:
+Documentation for the project can be found in the docs/ directory, including:
 
-api-spec.yaml → OpenAPI spec
+api-spec.yaml → OpenAPI specification for the API
 
-architecture-diagram.png → system architecture
+architecture-diagram.png → High-level system architecture
 
-team-roles.md → roles and responsibilities
+team-roles.md → Team roles and responsibilities
 
 Notes
 
@@ -181,4 +196,6 @@ Ensure Docker is running before executing Docker Compose commands.
 
 Each service can also be run locally using npm start after installing dependencies.
 
-Use docker compose down to stop the environment.
+To stop the services and bring down the Docker environment:
+
+docker compose down
