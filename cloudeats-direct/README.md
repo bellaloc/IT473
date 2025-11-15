@@ -87,7 +87,7 @@ Terraform v1.5+
 Git
 
 Clone Repository
-git clone https://github.com/your-username/cloudeats-direct.git
+git clone https://github.com/bellaloc/cloudeats-direct.git
 cd cloudeats-direct
 
 Infrastructure
