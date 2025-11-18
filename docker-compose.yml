@@ -2,13 +2,13 @@ services:
   fleet-service:
     container_name: fleet-service
     build:
-      context: ../services/fleet-service
+      context: ./services/fleet-service
     ports:
-      - "${FLEET_SERVICE_PORT}:3000"
+      - "${FLEET_SERVICE_PORT}:3001"
     command: npm start
     working_dir: /app
     volumes:
-      - ../services/fleet-service:/app
+      - ./services/fleet-service:/app
     environment:
       NODE_ENV: ${NODE_ENV}
     networks:
@@ -17,13 +17,13 @@ services:
   inventory-service:
     container_name: inventory-service
     build:
-      context: ../services/inventory-service
+      context: ./services/inventory-service
     ports:
-      - "${INVENTORY_SERVICE_PORT}:3000"
+      - "${INVENTORY_SERVICE_PORT}:3002"
     command: npm start
     working_dir: /app
     volumes:
-      - ../services/inventory-service:/app
+      - ./services/inventory-service:/app
     environment:
       NODE_ENV: ${NODE_ENV}
     networks:
@@ -32,13 +32,13 @@ services:
   notification-service:
     container_name: notification-service
     build:
-      context: ../services/notification-service
+      context: ./services/notification-service
     ports:
-      - "${NOTIFICATION_SERVICE_PORT}:3000"
+      - "${NOTIFICATION_SERVICE_PORT}:3003"
     command: npm start
     working_dir: /app
     volumes:
-      - ../services/notification-service:/app
+      - ./services/notification-service:/app
     environment:
       NODE_ENV: ${NODE_ENV}
     networks:
@@ -47,13 +47,13 @@ services:
   order-service:
     container_name: order-service
     build:
-      context: ../services/order-service
+      context: ./services/order-service
     ports:
-      - "${ORDER_SERVICE_PORT}:3000"
+      - "${ORDER_SERVICE_PORT}:3004"
     command: npm start
     working_dir: /app
     volumes:
-      - ../services/order-service:/app
+      - ./services/order-service:/app
     environment:
       NODE_ENV: ${NODE_ENV}
     networks:
@@ -62,13 +62,13 @@ services:
   payment-service:
     container_name: payment-service
     build:
-      context: ../services/payment-service
+      context: ./services/payment-service
     ports:
-      - "${PAYMENT_SERVICE_PORT}:3000"
+      - "${PAYMENT_SERVICE_PORT}:3005"
     command: npm start
     working_dir: /app
     volumes:
-      - ../services/payment-service:/app
+      - ./services/payment-service:/app
     environment:
       NODE_ENV: ${NODE_ENV}
     networks:

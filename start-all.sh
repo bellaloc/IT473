@@ -8,27 +8,25 @@ SERVICES=("fleet-service" "inventory-service" "notification-service" "order-serv
 
 if [ $DOCKER_RUNNING -eq 0 ]; then
     echo "Docker is running. Building and starting all services with Docker Compose..."
-    
-    # Move to project root where docker-compose.yml is
     cd "$(dirname "$0")"
-    
-    # Build and start all services
     docker compose up --build -d
-
     echo "All services are starting in Docker containers."
     echo "Use 'docker ps' to see running containers."
 else
-    echo "Docker is not running. Falling back to local npm start for each service..."
-    
+    echo "Docker is not running. Starting services locally..."
     for SERVICE in "${SERVICES[@]}"; do
         echo "Starting $SERVICE..."
-        cd "../services/$SERVICE" || exit
+        cd "./cloudeats-direct/services/$SERVICE" || exit
         npm install
-        # Start service in background
         npm start &
         cd - >/dev/null || exit
     done
 
-    echo "All services are starting locally in the background."
-    echo "Use 'ps aux | grep node' to see running services."
+    echo "Starting frontend..."
+    cd "./cloudeats-direct/frontend" || exit
+    npm install
+    npm start &
+    cd - >/dev/null || exit
+
+    echo "All services started locally in the background."
 fi
