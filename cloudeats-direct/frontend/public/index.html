@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CloudEats Direct</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
+    header {
+      background: #ff6b6b;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    main {
+      padding: 1rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .product {
+      background: white;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    button {
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #ff4b4b;
+    }
+    #cart {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #fff3f3;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>CloudEats Direct</h1>
+  </header>
+  <main>
+    <h2>Menu</h2>
+    <div id="products"></div>
+
+    <div id="cart">
+      <h3>Shopping Cart</h3>
+      <ul id="cart-items"></ul>
+      <button id="checkout-btn">Place Order</button>
+    </div>
+  </main>
+
+  <script>
+    const API_BASE = 'http://localhost:3002/api'; // Inventory Service
+    const ORDER_API = 'http://localhost:3004/orders'; // Order Service
+
+    let cart = [];
+
+    async function fetchProducts() {
+      try {
+        const res = await fetch(`${API_BASE}/products`);
+        const products = await res.json();
+        displayProducts(products);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+      }
+    }
+
+    function displayProducts(products) {
+      const container = document.getElementById('products');
+      container.innerHTML = '';
+      products.forEach(product => {
+        const div = document.createElement('div');
+        div.className = 'product';
+        div.innerHTML = `
+          <h3>${product.name}</h3>
+          <p>${product.description}</p>
+          <p>Price: $${product.price}</p>
+          <button onclick="addToCart(${product.id}, '${product.name}', ${product.price})">Add to Cart</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function addToCart(id, name, price) {
+      cart.push({ id, name, price });
+      renderCart();
+    }
+
+    function renderCart() {
+      const list = document.getElementById('cart-items');
+      list.innerHTML = '';
+      cart.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `${item.name} - $${item.price}`;
+        list.appendChild(li);
+      });
+    }
+
+    async function placeOrder() {
+      if (cart.length === 0) {
+        alert('Your cart is empty!');
+        return;
+      }
+
+      const orderData = {
+        items: cart.map(item => ({ productId: item.id, quantity: 1 }))
+      };
+
+      try {
+        const res = await fetch(ORDER_API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderData)
+        });
+
+        if (res.ok) {
+          alert('Order placed successfully!');
+          cart = [];
+          renderCart();
+        } else {
+          alert('Error placing order.');
+        }
+      } catch (err) {
+        console.error('Order error:', err);
+        alert('Error placing order.');
+      }
+    }
+
+    document.getElementById('checkout-btn').addEventListener('click', placeOrder);
+
+    // Load products on page load
+    fetchProducts();
+  </script>
+</body>
+</html>
