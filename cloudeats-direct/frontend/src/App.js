@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import ProductList from "./components/ProductList";
 import Cart from "./components/Cart";
 import Checkout from "./components/Checkout";
+import { getProducts, placeOrder } from "./services/api";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -10,8 +11,7 @@ function App() {
   const [checkoutComplete, setCheckoutComplete] = useState(false);
 
   useEffect(() => {
-    fetch("http://inventory-service:3000/api/products")
-      .then(res => res.json())
+    getProducts()
       .then(data => setProducts(data))
       .catch(err => console.error("Error fetching products:", err));
   }, []);
@@ -25,12 +25,7 @@ function App() {
   };
 
   const handleCheckout = () => {
-    fetch("http://order-service:3000/api/orders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items: cart }),
-    })
-      .then(res => res.json())
+    placeOrder({ items: cart })
       .then(data => {
         console.log("Order placed:", data);
         setCart([]);
@@ -45,7 +40,11 @@ function App() {
       {!checkoutComplete ? (
         <>
           <ProductList products={products} addToCart={addToCart} />
-          <Cart cart={cart} removeFromCart={removeFromCart} handleCheckout={handleCheckout} />
+          <Cart
+            cart={cart}
+            removeFromCart={removeFromCart}
+            handleCheckout={handleCheckout}
+          />
         </>
       ) : (
         <Checkout />

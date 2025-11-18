@@ -1,14 +1,27 @@
 services:
+  frontend:
+    container_name: frontend
+    build:
+      context: ./cloudeats-direct/frontend
+    ports:
+      - "${FRONTEND_PORT}:3000"
+    environment:
+      NODE_ENV: ${NODE_ENV}
+    depends_on:
+      - fleet-service
+      - inventory-service
+      - notification-service
+      - order-service
+      - payment-service
+    networks:
+      - cloudeats-network
+
   fleet-service:
     container_name: fleet-service
     build:
       context: ./services/fleet-service
     ports:
-      - "${FLEET_SERVICE_PORT}:3001"
-    command: npm start
-    working_dir: /app
-    volumes:
-      - ./services/fleet-service:/app
+      - "${FLEET_SERVICE_PORT}:3000"
     environment:
       NODE_ENV: ${NODE_ENV}
     networks:
@@ -19,11 +32,7 @@ services:
     build:
       context: ./services/inventory-service
     ports:
-      - "${INVENTORY_SERVICE_PORT}:3002"
-    command: npm start
-    working_dir: /app
-    volumes:
-      - ./services/inventory-service:/app
+      - "${INVENTORY_SERVICE_PORT}:3000"
     environment:
       NODE_ENV: ${NODE_ENV}
     networks:
@@ -34,11 +43,7 @@ services:
     build:
       context: ./services/notification-service
     ports:
-      - "${NOTIFICATION_SERVICE_PORT}:3003"
-    command: npm start
-    working_dir: /app
-    volumes:
-      - ./services/notification-service:/app
+      - "${NOTIFICATION_SERVICE_PORT}:3000"
     environment:
       NODE_ENV: ${NODE_ENV}
     networks:
@@ -49,11 +54,7 @@ services:
     build:
       context: ./services/order-service
     ports:
-      - "${ORDER_SERVICE_PORT}:3004"
-    command: npm start
-    working_dir: /app
-    volumes:
-      - ./services/order-service:/app
+      - "${ORDER_SERVICE_PORT}:3000"
     environment:
       NODE_ENV: ${NODE_ENV}
     networks:
@@ -64,11 +65,7 @@ services:
     build:
       context: ./services/payment-service
     ports:
-      - "${PAYMENT_SERVICE_PORT}:3005"
-    command: npm start
-    working_dir: /app
-    volumes:
-      - ./services/payment-service:/app
+      - "${PAYMENT_SERVICE_PORT}:3000"
     environment:
       NODE_ENV: ${NODE_ENV}
     networks:
