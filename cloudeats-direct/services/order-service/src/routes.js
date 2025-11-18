@@ -1,12 +1,23 @@
 const express = require('express');
 const router = express.Router();
 
+// Basic operational check
 router.get('/', (req, res) => {
-  res.json({ message: "List of orders (placeholder)" });
+  res.json({ message: 'Order service operational' });
 });
 
-router.post('/', (req, res) => {
-  res.json({ message: "Create order (placeholder)" });
+// List orders (placeholder)
+router.get('/list', (req, res) => {
+  res.json({ message: 'List of orders (placeholder)' });
+});
+
+// Create order
+router.post('/create', (req, res) => {
+  const order = req.body;
+  res.json({
+    message: 'Order created successfully',
+    order
+  });
 });
 
 module.exports = router;
