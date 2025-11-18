@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Load environment variables if .env exists
+# Load environment variables safely
 if [ -f ".env" ]; then
     export $(grep -v '^#' .env | xargs)
 fi
@@ -12,29 +12,35 @@ docker info >/dev/null 2>&1
 DOCKER_RUNNING=$?
 
 if [ $DOCKER_RUNNING -eq 0 ]; then
-    echo "Docker is running. Starting all services with Docker Compose..."
+    echo "Docker is running. Building and starting all services with Docker Compose..."
     docker compose up --build -d
     echo "✅ All services started in Docker containers."
 else
     echo "⚠ Docker is NOT running. Starting services locally using npm..."
 
-    # List of services (relative to the root of cloudeats-direct)
-    SERVICES=("fleet-service" "inventory-service" "notification-service" "order-service" "payment-service")
+    # Service list and paths (services are outside cloudeats-direct)
+    SERVICES=(
+        "fleet-service"
+        "inventory-service"
+        "notification-service"
+        "order-service"
+        "payment-service"
+    )
 
     for SERVICE in "${SERVICES[@]}"; do
-        SERVICE_PATH="./services/$SERVICE"
+        SERVICE_PATH="../services/$SERVICE"
 
         echo ""
         echo "Starting $SERVICE..."
 
         if [ ! -d "$SERVICE_PATH" ]; then
             echo "❌ ERROR: Directory not found: $SERVICE_PATH"
-            continue
+            exit 1
         fi
 
-        cd "$SERVICE_PATH" || continue
+        cd "$SERVICE_PATH" || exit
 
-        # Install dependencies if not present
+        # Install dependencies if missing
         if [ ! -d "node_modules" ]; then
             echo "Installing dependencies for $SERVICE..."
             npm install
@@ -43,12 +49,12 @@ else
         echo "Launching $SERVICE..."
         npm start &
 
-        cd - >/dev/null || continue
+        cd - >/dev/null || exit
     done
 
-    # Start frontend
     echo ""
     echo "Starting frontend..."
+
     FRONTEND_PATH="./frontend"
 
     if [ ! -d "$FRONTEND_PATH" ]; then
@@ -58,20 +64,18 @@ else
 
     cd "$FRONTEND_PATH" || exit
 
-    # Install frontend dependencies if missing
     if [ ! -d "node_modules" ]; then
         echo "Installing frontend dependencies..."
         npm install
     fi
 
     echo "Launching frontend..."
-    # Ignore browserslist warnings
-    BROWSERSLIST_IGNORE_OLD_DATA=true npm start &
+    npm start &
 
     cd - >/dev/null || exit
 fi
 
-# Give services a few seconds to boot
+# Let services boot
 sleep 5
 
 echo ""
