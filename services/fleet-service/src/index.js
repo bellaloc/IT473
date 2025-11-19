@@ -1,11 +1,13 @@
 const express = require('express');
-const app = express();
+const cors = require('cors');
 
-app.get('/', (req, res) => {
-  res.json({ message: 'Fleet service operational' });
+const app = express();
+app.use(cors({ origin: 'http://localhost:3006' }));
+app.use(express.json());
+
+app.get('/drivers', (req, res) => {
+  res.json([{ id: 1, name: "Driver A", status: "On duty" }]);
 });
 
 const PORT = process.env.FLEET_SERVICE_PORT || 3001;
-app.listen(PORT, () => console.log(`Fleet Service running on port ${PORT}`));
-
-;
+app.listen(PORT, () => console.log(`Fleet Service running on ${PORT}`));

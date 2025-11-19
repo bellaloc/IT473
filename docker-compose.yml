@@ -71,6 +71,21 @@ services:
     networks:
       - cloudeats-network
 
+  db:
+    container_name: cloudeats-db
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_DB: cloudeats
+      POSTGRES_USER: cloudeats
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./services/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - cloudeats-network
+
 networks:
   cloudeats-network:
     driver: bridge
