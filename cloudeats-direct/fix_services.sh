@@ -1,23 +1,32 @@
 #!/bin/bash
+set -e
 
 echo "Cleaning old/messy folders..."
-rm -rf CloudEats
-rm -rf cloudeats-direct/CloudEats
-rm -rf services/*/*/*
+
+# Remove only the old src folders to avoid deleting entire service structures
+rm -rf services/fleet-service/src
+rm -rf services/inventory-service/src
+rm -rf services/notification-service/src
+rm -rf services/order-service/src
+rm -rf services/payment-service/src
 
 echo "Recreating clean services structure..."
 mkdir -p services/fleet-service/src
 mkdir -p services/inventory-service/src
 mkdir -p services/notification-service/src
 mkdir -p services/order-service/src
+mkdir -p services/order-service/src/routes
 mkdir -p services/payment-service/src
+mkdir -p services/payment-service/src/routes
 
 echo "Writing index.js files..."
 
 # Fleet Service
-cat > services/fleet-service/src/index.js <<EOF
+cat > services/fleet-service/src/index.js <<'EOF'
 const express = require('express');
 const app = express();
+
+app.use(express.json());
 
 app.get('/', (req, res) => {
   res.json({ message: 'Fleet service operational' });
@@ -25,14 +34,16 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(\`Fleet Service running on port \${PORT}\`);
+  console.log(`Fleet Service running on port ${PORT}`);
 });
 EOF
 
 # Inventory Service
-cat > services/inventory-service/src/index.js <<EOF
+cat > services/inventory-service/src/index.js <<'EOF'
 const express = require('express');
 const app = express();
+
+app.use(express.json());
 
 app.get('/', (req, res) => {
   res.json({ message: 'Inventory service operational' });
@@ -40,14 +51,16 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {
-  console.log(\`Inventory Service running on port \${PORT}\`);
+  console.log(`Inventory Service running on port ${PORT}`);
 });
 EOF
 
 # Notification Service
-cat > services/notification-service/src/index.js <<EOF
+cat > services/notification-service/src/index.js <<'EOF'
 const express = require('express');
 const app = express();
+
+app.use(express.json());
 
 app.get('/', (req, res) => {
   res.json({ message: 'Notification service operational' });
@@ -55,26 +68,29 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 3003;
 app.listen(PORT, () => {
-  console.log(\`Notification Service running on port \${PORT}\`);
+  console.log(`Notification Service running on port ${PORT}`);
 });
 EOF
 
 # Order Service
-cat > services/order-service/src/index.js <<EOF
+cat > services/order-service/src/index.js <<'EOF'
 const express = require('express');
 const routes = require('./routes');
 const app = express();
 
 app.use(express.json());
+app.get('/', (req, res) => {
+  res.json({ message: 'Order service operational' });
+});
 app.use('/orders', routes);
 
 const PORT = process.env.PORT || 3004;
 app.listen(PORT, () => {
-  console.log(\`Order Service running on port \${PORT}\`);
+  console.log(`Order Service running on port ${PORT}`);
 });
 EOF
 
-cat > services/order-service/src/routes.js <<EOF
+cat > services/order-service/src/routes.js <<'EOF'
 const express = require('express');
 const router = express.Router();
 
@@ -91,7 +107,7 @@ module.exports = router;
 EOF
 
 # Payment Service
-cat > services/payment-service/src/index.js <<EOF
+cat > services/payment-service/src/index.js <<'EOF'
 const express = require('express');
 const routes = require('./routes');
 const app = express();
@@ -101,11 +117,11 @@ app.use('/payments', routes);
 
 const PORT = process.env.PORT || 3005;
 app.listen(PORT, () => {
-  console.log(\`Payment Service running on port \${PORT}\`);
+  console.log(`Payment Service running on port ${PORT}`);
 });
 EOF
 
-cat > services/payment-service/src/routes.js <<EOF
+cat > services/payment-service/src/routes.js <<'EOF'
 const express = require('express');
 const router = express.Router();
 

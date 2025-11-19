@@ -1,12 +1,27 @@
 import React from "react";
 
-const Navbar = ({ cartCount }) => {
+function Navbar({ cartCount }) {
   return (
-    <nav style={{ padding: "1rem", background: "#ff6347", color: "white" }}>
-      <h1>Cloudeats</h1>
-      <div>Cart: {cartCount}</div>
+    <nav style={styles.nav}>
+      <h1 style={styles.title}>Cloudeats</h1>
+      <div style={styles.cart}>
+        🛒 Cart: {cartCount}
+      </div>
     </nav>
   );
+}
+
+const styles = {
+  nav: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "10px 20px",
+    backgroundColor: "#007bff",
+    color: "#fff"
+  },
+  title: { margin: 0 },
+  cart: { fontWeight: "bold" }
 };
 
 export default Navbar;
