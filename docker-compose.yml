@@ -2,35 +2,34 @@
 
 services:
   frontend:
-  container_name: frontend
-  build:
-    context: ./cloudeats-direct/frontend
-  ports:
-    - "3000:80"  # Map host 3000 → container 80
-  environment:
-    NODE_ENV: ${NODE_ENV}
-    REACT_APP_FLEET_SERVICE_URL: ${REACT_APP_FLEET_SERVICE_URL}
-    REACT_APP_INVENTORY_SERVICE_URL: ${REACT_APP_INVENTORY_SERVICE_URL}
-    REACT_APP_NOTIFICATION_SERVICE_URL: ${REACT_APP_NOTIFICATION_SERVICE_URL}
-    REACT_APP_ORDER_SERVICE_URL: ${REACT_APP_ORDER_SERVICE_URL}
-    REACT_APP_PAYMENT_SERVICE_URL: ${REACT_APP_PAYMENT_SERVICE_URL}
-  depends_on:
-    - fleet-service
-    - inventory-service
-    - notification-service
-    - order-service
-    - payment-service
-    - db
-  networks:
-    - cloudeats-network
-
+    container_name: frontend
+    build:
+      context: ./cloudeats-direct/frontend
+    ports:
+      - "3000:80"  # Map host 3000 → nginx container port 80
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      REACT_APP_FLEET_SERVICE_URL: ${REACT_APP_FLEET_SERVICE_URL}
+      REACT_APP_INVENTORY_SERVICE_URL: ${REACT_APP_INVENTORY_SERVICE_URL}
+      REACT_APP_NOTIFICATION_SERVICE_URL: ${REACT_APP_NOTIFICATION_SERVICE_URL}
+      REACT_APP_ORDER_SERVICE_URL: ${REACT_APP_ORDER_SERVICE_URL}
+      REACT_APP_PAYMENT_SERVICE_URL: ${REACT_APP_PAYMENT_SERVICE_URL}
+    depends_on:
+      - fleet-service
+      - inventory-service
+      - notification-service
+      - order-service
+      - payment-service
+      - db
+    networks:
+      - cloudeats-network
 
   fleet-service:
     container_name: fleet-service
     build:
       context: ./services/fleet-service
     ports:
-      - "${FLEET_SERVICE_PORT}:3000"
+      - "3001:3000"
     environment:
       NODE_ENV: ${NODE_ENV}
       DATABASE_URL: "mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}"
@@ -44,7 +43,7 @@ services:
     build:
       context: ./services/inventory-service
     ports:
-      - "${INVENTORY_SERVICE_PORT}:3000"
+      - "3002:3000"
     environment:
       NODE_ENV: ${NODE_ENV}
       DATABASE_URL: "mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}"
@@ -58,7 +57,7 @@ services:
     build:
       context: ./services/notification-service
     ports:
-      - "${NOTIFICATION_SERVICE_PORT}:3000"
+      - "3003:3000"
     environment:
       NODE_ENV: ${NODE_ENV}
       DATABASE_URL: "mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}"
@@ -72,7 +71,7 @@ services:
     build:
       context: ./services/order-service
     ports:
-      - "${ORDER_SERVICE_PORT}:3000"
+      - "3004:3000"
     environment:
       NODE_ENV: ${NODE_ENV}
       DATABASE_URL: "mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}"
@@ -86,7 +85,7 @@ services:
     build:
       context: ./services/payment-service
     ports:
-      - "${PAYMENT_SERVICE_PORT}:3000"
+      - "3005:3000"
     environment:
       NODE_ENV: ${NODE_ENV}
       DATABASE_URL: "mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}"
