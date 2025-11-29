@@ -1,21 +1,34 @@
 // src/services/api.js
 
-// Docker service URLs (used when running in Docker Compose)
-// Falls back to localhost if environment variable is not set
-const INVENTORY_API = process.env.REACT_APP_INVENTORY_SERVICE_URL || "http://inventory-service:3000/api/products";
-const ORDER_API = process.env.REACT_APP_ORDER_SERVICE_URL || "http://order-service:3000/orders";
-const PAYMENT_API = process.env.REACT_APP_PAYMENT_SERVICE_URL || "http://payment-service:3000/payments";
-const NOTIFICATION_API = process.env.REACT_APP_NOTIFICATION_SERVICE_URL || "http://notification-service:3000/notifications";
-const FLEET_API = process.env.REACT_APP_FLEET_SERVICE_URL || "http://fleet-service:3000/vehicles";
+// Correct Docker internal service URLs
+const INVENTORY_API =
+  process.env.REACT_APP_INVENTORY_SERVICE_URL ||
+  "http://inventory-service:3002/api/products";
+
+const ORDER_API =
+  process.env.REACT_APP_ORDER_SERVICE_URL ||
+  "http://order-service:3004/orders";
+
+const PAYMENT_API =
+  process.env.REACT_APP_PAYMENT_SERVICE_URL ||
+  "http://payment-service:3005/payments";
+
+const NOTIFICATION_API =
+  process.env.REACT_APP_NOTIFICATION_SERVICE_URL ||
+  "http://notification-service:3003/notifications";
+
+const FLEET_API =
+  process.env.REACT_APP_FLEET_SERVICE_URL ||
+  "http://fleet-service:3001/vehicles";
 
 /**
  * Fetch all products from Inventory Service
- * @returns {Promise<Array>} List of products
  */
 export async function getProducts() {
   try {
     const res = await fetch(INVENTORY_API);
-    if (!res.ok) throw new Error(`Failed to fetch products: ${res.statusText}`);
+    if (!res.ok)
+      throw new Error(`Failed to fetch products: ${res.statusText}`);
     return await res.json();
   } catch (err) {
     console.error("Inventory API error:", err);
@@ -24,9 +37,7 @@ export async function getProducts() {
 }
 
 /**
- * Place an order via Order Service
- * @param {Object} orderData - { items: [...] }
- * @returns {Promise<Object>} Response from Order Service
+ * Place an order
  */
 export async function placeOrder(orderData) {
   try {
@@ -44,9 +55,7 @@ export async function placeOrder(orderData) {
 }
 
 /**
- * Process a payment via Payment Service
- * @param {Object} paymentData - { orderId, amount, paymentMethod }
- * @returns {Promise<Object>} Response from Payment Service
+ * Process payment
  */
 export async function processPayment(paymentData) {
   try {
@@ -64,9 +73,7 @@ export async function processPayment(paymentData) {
 }
 
 /**
- * Send a notification via Notification Service
- * @param {Object} notificationData - { userId, message }
- * @returns {Promise<Object>} Response from Notification Service
+ * Send notification
  */
 export async function sendNotification(notificationData) {
   try {
@@ -84,9 +91,7 @@ export async function sendNotification(notificationData) {
 }
 
 /**
- * Track fleet updates via Fleet Service
- * @param {Object} vehicleData - { vehicleId, status, location }
- * @returns {Promise<Object>} Response from Fleet Service
+ * Track fleet updates
  */
 export async function trackFleet(vehicleData) {
   try {
