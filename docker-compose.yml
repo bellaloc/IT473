@@ -1,12 +1,10 @@
-
-
 services:
   frontend:
     container_name: frontend
     build:
       context: ./cloudeats-direct/frontend
     ports:
-      - "3000:80"  # Map host 3000 → nginx container port 80
+      - "3000:80"
     environment:
       NODE_ENV: ${NODE_ENV}
       REACT_APP_FLEET_SERVICE_URL: ${REACT_APP_FLEET_SERVICE_URL}
@@ -27,7 +25,7 @@ services:
   fleet-service:
     container_name: fleet-service
     build:
-      context: ./services/fleet-service
+      context: ./cloudeats-direct/services/fleet-service
     ports:
       - "3001:3000"
     environment:
@@ -41,7 +39,7 @@ services:
   inventory-service:
     container_name: inventory-service
     build:
-      context: ./services/inventory-service
+      context: ./cloudeats-direct/services/inventory-service
     ports:
       - "3002:3000"
     environment:
@@ -55,7 +53,7 @@ services:
   notification-service:
     container_name: notification-service
     build:
-      context: ./services/notification-service
+      context: ./cloudeats-direct/services/notification-service
     ports:
       - "3003:3000"
     environment:
@@ -69,7 +67,7 @@ services:
   order-service:
     container_name: order-service
     build:
-      context: ./services/order-service
+      context: ./cloudeats-direct/services/order-service
     ports:
       - "3004:3000"
     environment:
@@ -83,7 +81,7 @@ services:
   payment-service:
     container_name: payment-service
     build:
-      context: ./services/payment-service
+      context: ./cloudeats-direct/services/payment-service
     ports:
       - "3005:3000"
     environment:
@@ -106,7 +104,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./services/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./cloudeats-direct/services/database/init.sql:/docker-entrypoint-initdb.d/init.sql
       - dbdata:/var/lib/mysql
     networks:
       - cloudeats-network
