@@ -1,66 +1,90 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -e
 
-# Load .env if present
+# ----------------------------------------
+# Load environment variables if .env exists
+# ----------------------------------------
 if [ -f ".env" ]; then
-    export $(grep -v '^#' .env | xargs)
+  export $(grep -v '^#' .env | xargs)
 fi
 
 echo "Checking Docker status..."
 
-docker info >/dev/null 2>&1
-DOCKER_RUNNING=$?
+# ----------------------------------------
+# Check if Docker is running
+# ----------------------------------------
+if docker info >/dev/null 2>&1; then
+  echo "Docker is running. Starting all services with Docker Compose..."
+  docker compose up --build -d
+  echo "✅ All services started in Docker containers."
 
-if [ $DOCKER_RUNNING -eq 0 ]; then
-    echo "Docker running → starting Docker Compose..."
-    docker compose up --build -d
-    echo "✅ Services started in Docker containers."
 else
-    echo "⚠ Docker NOT running → starting services locally..."
+  echo "⚠ Docker is NOT running. Starting services locally using npm..."
 
-    SERVICES=("fleet-service" "inventory-service" "notification-service" "order-service" "payment-service")
-    SERVICES_DIR="./services"
-    FRONTEND_DIR="./cloudeats-direct"
+  # ----------------------------------------
+  # Backend services
+  # ----------------------------------------
+  SERVICES=(
+    "fleet-service"
+    "inventory-service"
+    "notification-service"
+    "order-service"
+    "payment-service"
+  )
 
-    for SERVICE in "${SERVICES[@]}"; do
-        SERVICE_PATH="$SERVICES_DIR/$SERVICE"
+  for SERVICE in "${SERVICES[@]}"; do
+    SERVICE_PATH="./services/$SERVICE"
 
-        echo "Starting $SERVICE..."
+    echo ""
+    echo "Starting $SERVICE..."
 
-        if [ ! -d "$SERVICE_PATH" ]; then
-            echo "❌ ERROR: Missing directory: $SERVICE_PATH"
-            exit 1
-        fi
-
-        cd "$SERVICE_PATH" || exit
-
-        if [ ! -d "node_modules" ]; then
-            echo "Installing dependencies for $SERVICE..."
-            npm install
-        fi
-
-        npm start &
-        cd - >/dev/null || exit
-    done
-
-    echo "Starting frontend..."
-
-    if [ ! -d "$FRONTEND_DIR" ]; then
-        echo "❌ ERROR: Frontend folder NOT found: $FRONTEND_DIR"
-        exit 1
+    if [ ! -d "$SERVICE_PATH" ]; then
+      echo "❌ ERROR: Directory not found: $SERVICE_PATH"
+      continue
     fi
 
-    cd "$FRONTEND_DIR" || exit
+    (
+      cd "$SERVICE_PATH"
 
-    if [ ! -d node_modules ]; then
-        echo "Installing frontend dependencies..."
+      if [ ! -d "node_modules" ]; then
+        echo "Installing dependencies for $SERVICE..."
         npm install
+      fi
+
+      echo "Launching $SERVICE..."
+      npm start
+    ) &
+  done
+
+  # ----------------------------------------
+  # Frontend
+  # ----------------------------------------
+  echo ""
+  echo "Starting frontend..."
+
+  FRONTEND_PATH="./frontend"
+
+  if [ ! -d "$FRONTEND_PATH" ]; then
+    echo "❌ ERROR: Frontend folder not found: $FRONTEND_PATH"
+    exit 1
+  fi
+
+  (
+    cd "$FRONTEND_PATH"
+
+    if [ ! -d "node_modules" ]; then
+      echo "Installing frontend dependencies..."
+      npm install
     fi
 
-    npm start &
-
-    cd - >/dev/null || exit
+    echo "Launching frontend..."
+    BROWSERSLIST_IGNORE_OLD_DATA=true npm start
+  ) &
 fi
 
+# ----------------------------------------
+# Output service URLs
+# ----------------------------------------
 sleep 5
 
 echo ""
