@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   frontend:
     container_name: frontend
@@ -8,12 +6,12 @@ services:
     ports:
       - "3000:80"
     environment:
-      NODE_ENV: ${NODE_ENV}
-      REACT_APP_FLEET_SERVICE_URL: ${REACT_APP_FLEET_SERVICE_URL}
-      REACT_APP_INVENTORY_SERVICE_URL: ${REACT_APP_INVENTORY_SERVICE_URL}
-      REACT_APP_NOTIFICATION_SERVICE_URL: ${REACT_APP_NOTIFICATION_SERVICE_URL}
-      REACT_APP_ORDER_SERVICE_URL: ${REACT_APP_ORDER_SERVICE_URL}
-      REACT_APP_PAYMENT_SERVICE_URL: ${REACT_APP_PAYMENT_SERVICE_URL}
+      NODE_ENV: "${NODE_ENV}"
+      REACT_APP_FLEET_SERVICE_URL: "${REACT_APP_FLEET_SERVICE_URL}"
+      REACT_APP_INVENTORY_SERVICE_URL: "${REACT_APP_INVENTORY_SERVICE_URL}"
+      REACT_APP_NOTIFICATION_SERVICE_URL: "${REACT_APP_NOTIFICATION_SERVICE_URL}"
+      REACT_APP_ORDER_SERVICE_URL: "${REACT_APP_ORDER_SERVICE_URL}"
+      REACT_APP_PAYMENT_SERVICE_URL: "${REACT_APP_PAYMENT_SERVICE_URL}"
     depends_on:
       - fleet-service
       - inventory-service
@@ -30,8 +28,8 @@ services:
     ports:
       - "3001:3000"
     environment:
-      NODE_ENV: ${NODE_ENV}
-      DATABASE_URL: mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}
+      NODE_ENV: "${NODE_ENV}"
+      DATABASE_URL: "mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}"
     depends_on:
       - db
     networks:
@@ -44,8 +42,8 @@ services:
     ports:
       - "3002:3000"
     environment:
-      NODE_ENV: ${NODE_ENV}
-      DATABASE_URL: mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}
+      NODE_ENV: "${NODE_ENV}"
+      DATABASE_URL: "mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}"
     depends_on:
       - db
     networks:
@@ -58,8 +56,8 @@ services:
     ports:
       - "3003:3000"
     environment:
-      NODE_ENV: ${NODE_ENV}
-      DATABASE_URL: mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}
+      NODE_ENV: "${NODE_ENV}"
+      DATABASE_URL: "mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}"
     depends_on:
       - db
     networks:
@@ -72,8 +70,8 @@ services:
     ports:
       - "3004:3000"
     environment:
-      NODE_ENV: ${NODE_ENV}
-      DATABASE_URL: mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}
+      NODE_ENV: "${NODE_ENV}"
+      DATABASE_URL: "mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}"
     depends_on:
       - db
     networks:
@@ -86,8 +84,8 @@ services:
     ports:
       - "3005:3000"
     environment:
-      NODE_ENV: ${NODE_ENV}
-      DATABASE_URL: mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}
+      NODE_ENV: "${NODE_ENV}"
+      DATABASE_URL: "mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}"
     depends_on:
       - db
     networks:
@@ -96,15 +94,15 @@ services:
   db:
     container_name: cloudeats-db
     image: mysql:8.1
-    restart: always
+    restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: "${DB_NAME}"
+      MYSQL_USER: "${DB_USER}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_ROOT_PASSWORD: "rootpassword"
     volumes:
-      - ./services/database/init.sql:/docker-entrypoint-initdb.d/init.sql
       - dbdata:/var/lib/mysql
+      - ./services/database/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - cloudeats-network
 
