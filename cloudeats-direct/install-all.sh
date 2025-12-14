@@ -2,36 +2,20 @@
 
 echo "Installing dependencies for all CloudEats services..."
 
-BASE_DIR=$(pwd)
-
+BASE_DIR="$(cd "$(dirname "$0")"; pwd)"
 SERVICES_DIR="$BASE_DIR/services"
-FRONTEND_DIR="$BASE_DIR/cloudeats-direct"
+FRONTEND_DIR="$BASE_DIR/frontend"
 
 SERVICES=("fleet-service" "inventory-service" "notification-service" "order-service" "payment-service")
 
-echo "Base directory: $BASE_DIR"
-echo "Services directory: $SERVICES_DIR"
-echo "Frontend directory: $FRONTEND_DIR"
-
-# Install microservice dependencies
-for SERVICE in "${SERVICES[@]}"; do
-    SERVICE_PATH="$SERVICES_DIR/$SERVICE"
-    if [ -d "$SERVICE_PATH" ]; then
-        echo "Installing dependencies for $SERVICE..."
-        cd "$SERVICE_PATH" || exit
-        npm install
-    else
-        echo "WARNING: Missing microservice: $SERVICE_PATH"
-    fi
+for service in "${SERVICES[@]}"; do
+    echo "Installing dependencies for $service..."
+    cd "$SERVICES_DIR/$service" || { echo "Directory $service not found!"; continue; }
+    npm install
 done
 
-# Install frontend
-if [ -d "$FRONTEND_DIR" ]; then
-    echo "Installing frontend dependencies..."
-    cd "$FRONTEND_DIR" || exit
-    npm install
-else
-    echo "WARNING: Frontend not found at: $FRONTEND_DIR"
-fi
+echo "Installing dependencies for frontend..."
+cd "$FRONTEND_DIR" || { echo "Frontend directory not found!"; exit 1; }
+npm install
 
 echo "✔ All installations completed!"
